@@ -1,6 +1,6 @@
 /**
- * Created by liuxianyi on 2016-08-25
- * Version: 1.0.0
+ * Created by liuxianyi
+ * Version: 1.0.1 (2016-12-16)
  * Copyright (C) 2016 Liu Xianyi
  * http://www.liuxianyi.com
  */
@@ -55,7 +55,7 @@
     function callback(obj,xhr){
         obj.complete?obj.complete():"";
         if(xhr.status == 200){
-            obj.success(obj.dataType.tolowerCase == "json" ? JSON.parse(xhr.responseText) : xhr.responseText);
+            obj.success((obj.dataType && obj.dataType.tolowerCase == "json") ? JSON.parse(xhr.responseText) : xhr.responseText);
         }else{
             obj.error?obj.error():"";
         }
@@ -369,6 +369,10 @@
             }
         },
         on:function(sEv,ele,fn){
+            if(arguments.length == 2){
+                forFn(this,sEv,ele);
+                return this;
+            }
             var i = 0,
                 len = this.length;
 
@@ -450,16 +454,7 @@
             }
             return this;
         },
-        splice:function(){
-            var oArray = [],
-                i = 0,
-                len = this.length;
-            for(;i<len;i++){
-                oArray.push(this[i]);
-            }
-            var aArray = arguments.length == 1 ? oArray.splice(arguments[0]) : oArray.splice(arguments[0],arguments[1]);
-            return merge(this.constructor(),aArray);
-        },
+        splice:[].splice,
         bind:function(sEv,fn){
             forFn(this,sEv,fn);
             return this;
@@ -750,7 +745,7 @@
 
     Ealik.fn.init.prototype = Ealik.fn;
 
-    window.$ = Ealik;
+    window.Ealik = window.$ = Ealik;
 
     $.ajax = function(obj){
         obj.beforeSend?obj.beforeSend():"";
@@ -772,7 +767,7 @@
         }
         xhr.open(obj.type,obj.url,asyncType);
         if(obj.type.toLowerCase() == "post"){
-            xhr.setRequestHeader("content-Type","application/json");
+            xhr.setRequestHeader("Content-Type","application/json");
             xhr.send(JSON.stringify(obj.data));
         }else{
             xhr.send(null);
